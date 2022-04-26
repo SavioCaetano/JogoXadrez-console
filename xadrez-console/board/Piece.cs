@@ -14,5 +14,10 @@
             this.color = color;
             this.numberOfMoves = 0;
         }
+
+        public void incrementNumberOfMoves ()
+        {
+            numberOfMoves++;
+        }
     }
 }
