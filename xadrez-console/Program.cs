@@ -8,7 +8,7 @@ namespace xadrez_console
     {
         static void Main(string[] args)
         {
-            /*
+            
             try
             {                
                 Board board = new Board(8, 8);
@@ -17,6 +17,7 @@ namespace xadrez_console
                 board.putPiece(new Tower(board, Color.Black), new Position(1, 3));
                 board.putPiece(new King(board, Color.Black), new Position(0, 2));
 
+                board.putPiece(new Tower(board, Color.White), new Position(3, 5));                
 
                 Screen.printBoard(board);             
             }
@@ -24,10 +25,7 @@ namespace xadrez_console
             {
                 Console.WriteLine(e.Message);
             }
-            */
-            PositionChess pos = new PositionChess('a', 1);
-            Console.WriteLine(pos);
-            Console.WriteLine(pos.toPosition());
+            
         }
     }
 }
