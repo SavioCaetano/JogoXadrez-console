@@ -10,8 +10,8 @@
         public Piece(Board board, Color color)
         {
             this.position = null;
-            this.color = color;
             this.board = board;
+            this.color = color;
             this.numberOfMoves = 0;
         }
     }
