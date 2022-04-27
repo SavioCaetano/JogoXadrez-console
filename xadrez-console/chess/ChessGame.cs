@@ -29,6 +29,20 @@ namespace chess
 
         private void placePieces()
         {
+            board.putPiece(new Tower(board, Color.Black), new PositionChess('c', 8).toPosition());
+            board.putPiece(new Tower(board, Color.Black), new PositionChess('c', 7).toPosition());
+            board.putPiece(new Tower(board, Color.Black), new PositionChess('d', 7).toPosition());
+            board.putPiece(new Tower(board, Color.Black), new PositionChess('e', 8).toPosition());
+            board.putPiece(new Tower(board, Color.Black), new PositionChess('e', 7).toPosition());
+            board.putPiece(new King(board, Color.Black), new PositionChess('d', 8).toPosition());
+
+            board.putPiece(new Tower(board, Color.White), new PositionChess('c', 1).toPosition());
+            board.putPiece(new Tower(board, Color.White), new PositionChess('c', 2).toPosition());
+            board.putPiece(new Tower(board, Color.White), new PositionChess('d', 2).toPosition());
+            board.putPiece(new Tower(board, Color.White), new PositionChess('e', 1).toPosition());
+            board.putPiece(new Tower(board, Color.White), new PositionChess('e', 2).toPosition());
+            board.putPiece(new King(board, Color.White), new PositionChess('d', 1).toPosition());
+            /*
             board.putPiece(new Tower(board, Color.Black), new PositionChess('a', 8).toPosition());
             board.putPiece(new Horse(board, Color.Black), new PositionChess('b', 8).toPosition());
             board.putPiece(new Bishop(board, Color.Black), new PositionChess('c', 8).toPosition());
@@ -62,6 +76,7 @@ namespace chess
             board.putPiece(new Peon(board, Color.White), new PositionChess('f', 2).toPosition());
             board.putPiece(new Peon(board, Color.White), new PositionChess('g', 2).toPosition());
             board.putPiece(new Peon(board, Color.White), new PositionChess('h', 2).toPosition());
+            */
         }
     }
 }
