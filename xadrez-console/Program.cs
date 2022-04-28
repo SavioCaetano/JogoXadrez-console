@@ -8,37 +8,50 @@ namespace xadrez_console
     {
         static void Main(string[] args)
         {
-            
+
             try
             {
                 ChessGame game = new ChessGame();
-                
+
                 while (!game.finished)
                 {
-                    Console.Clear();
-                    Screen.printBoard(game.board);
+                    try
+                    {
+                        Console.Clear();
+                        Screen.printBoard(game.board);
+                        Console.WriteLine();
+                        Console.WriteLine("Turno: " + game.turn);
+                        Console.WriteLine("Aguardando jogada: " + game.currentPlayer);
 
-                    Console.WriteLine();
-                    Console.Write("Origin: ");
-                    Position origin = Screen.readPositionChess().toPosition();
+                        Console.WriteLine();
+                        Console.Write("Origem: ");
+                        Position origin = Screen.readPositionChess().toPosition();
+                        game.validateHomePosition(origin);
 
-                    bool[,] possiblePositions = game.board.piece(origin).possibleMoves();
+                        bool[,] possiblePositions = game.board.piece(origin).possibleMoves();
 
-                    Console.Clear();
-                    Screen.printBoard(game.board, possiblePositions);
+                        Console.Clear();
+                        Screen.printBoard(game.board, possiblePositions);
 
-                    Console.WriteLine();
-                    Console.Write("Destiny: ");
-                    Position destiny = Screen.readPositionChess().toPosition();
+                        Console.WriteLine();
+                        Console.Write("Destino: ");
+                        Position destiny = Screen.readPositionChess().toPosition();
+                        game.validateTargetPosition(origin, destiny);
 
-                    game.performMoviment(origin, destiny);
-                }                
+                        game.makeMove(origin, destiny);
+                    }
+                    catch (BoardException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.ReadLine();
+                    }
+                }
             }
             catch (BoardException e)
             {
                 Console.WriteLine(e.Message);
             }
-            
+
         }
     }
 }

@@ -33,7 +33,7 @@
         {
             if (existPiece(pos))
             {
-                throw new BoardException("There is already a piece in that position!");
+                throw new BoardException("Já existe uma peça nessa posição!");
             }
             pieces[pos.line, pos.column] = p;
             p.position = pos;
@@ -64,7 +64,7 @@
         {
             if (!validPosition(pos))
             {
-                throw new BoardException("Invalid Position!");
+                throw new BoardException("Posição inválida!");
             }
         }
     }
