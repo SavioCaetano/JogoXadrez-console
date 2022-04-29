@@ -19,8 +19,7 @@ namespace xadrez_console
                     {
                         Console.Clear();
                         Screen.printGame(game);
-
-                        Console.WriteLine();                        
+                                             
                         Console.Write("Origem: ");
                         Position origin = Screen.readPositionChess().toPosition();
                         game.validateHomePosition(origin);

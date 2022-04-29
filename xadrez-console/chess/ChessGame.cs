@@ -11,6 +11,7 @@ namespace chess
         public bool finished { get; private set; }
         private HashSet<Piece> pieces;
         private HashSet<Piece> captured;
+        public bool xeque { get; private set; }
 
         public ChessGame()
         {
@@ -18,12 +19,13 @@ namespace chess
             turn = 1;
             currentPlayer = Color.White;
             finished = false;
+            xeque = false;
             pieces = new HashSet<Piece>();
             captured = new HashSet<Piece>();
             placePieces();
         }
 
-        public void performMoviment(Position origin, Position destiny)
+        public Piece performMoviment(Position origin, Position destiny)
         {
             Piece p = board.removePiece(origin);
             p.incrementNumberOfMoves();
@@ -33,11 +35,40 @@ namespace chess
             {
                 captured.Add(capturedPiece);
             }
+            return capturedPiece;
+        }
+
+        public void undoMoviment(Position origin, Position destiny, Piece capturedPiece)
+        {
+            Piece p = board.removePiece(destiny);
+            p.decrementNumberOfMoves();
+            if (capturedPiece != null)
+            {
+                board.putPiece(capturedPiece, destiny);
+                captured.Remove(capturedPiece);
+            }
+            board.putPiece(p, origin);
         }
 
         public void makeMove(Position origin, Position destiny)
         {
-            performMoviment(origin, destiny);
+            Piece capturedPiece = performMoviment(origin, destiny);
+            
+            if (isInXeque(currentPlayer))
+            {
+                undoMoviment(origin, destiny, capturedPiece);
+                throw new BoardException("Você não pode se colocar em xeque!");
+            }
+
+            if (isInXeque(opponent(currentPlayer)))
+            {
+                xeque = true;
+            }
+            else
+            {
+                xeque = false;
+            }
+
             turn++;
             changePlayer();
         }
@@ -82,11 +113,11 @@ namespace chess
         public HashSet<Piece> capturedGamePieces(Color color)
         {
             HashSet<Piece> aux = new HashSet<Piece>();
-            foreach(Piece i in captured)
+            foreach(Piece x in captured)
             {
-                if (i.color == color)
+                if (x.color == color)
                 {
-                    aux.Add(i);
+                    aux.Add(x);
                 }
             }
             return aux;
@@ -95,15 +126,58 @@ namespace chess
         public HashSet<Piece> piecesInGame(Color color)
         {
             HashSet<Piece> aux = new HashSet<Piece>();
-            foreach (Piece i in captured)
+            foreach (Piece x in pieces)
             {
-                if (i.color == color)
+                if (x.color == color)
                 {
-                    aux.Add(i);
+                    aux.Add(x);
                 }
             }
             aux.ExceptWith(capturedGamePieces(color));
             return aux;
+        }
+
+        private Color opponent(Color color)
+        {
+            if (color == Color.White)
+            {
+                return Color.Black;
+            }
+            else
+            {
+                return Color.White;
+            }
+        }
+
+        private Piece king(Color color)
+        {
+            foreach(Piece x in piecesInGame(color))
+            {
+                if (x is King)
+                {
+                    return x;
+                }
+            }
+            return null;
+        }
+
+        public bool isInXeque(Color color)
+        {
+            Piece K = king(color);
+            if (K == null)
+            {
+                throw new BoardException("Não tem rei da cor " + color + " no tabuleiro!");
+            }
+
+            foreach(Piece x in piecesInGame(opponent(color)))
+            {
+                bool[,] mat = x.possibleMoves();
+                if (mat[K.position.line, K.position.column])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void placeNewPiece(char column, int line, Piece piece)
