@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using board;
 
 namespace chess
@@ -9,6 +9,8 @@ namespace chess
         public int turn { get; private set; }
         public Color currentPlayer { get; private set; }
         public bool finished { get; private set; }
+        private HashSet<Piece> pieces;
+        private HashSet<Piece> captured;
 
         public ChessGame()
         {
@@ -16,6 +18,8 @@ namespace chess
             turn = 1;
             currentPlayer = Color.White;
             finished = false;
+            pieces = new HashSet<Piece>();
+            captured = new HashSet<Piece>();
             placePieces();
         }
 
@@ -25,6 +29,10 @@ namespace chess
             p.incrementNumberOfMoves();
             Piece capturedPiece = board.removePiece(destiny);
             board.putPiece(p, destiny);
+            if (capturedPiece != null)
+            {
+                captured.Add(capturedPiece);
+            }
         }
 
         public void makeMove(Position origin, Position destiny)
@@ -71,21 +79,55 @@ namespace chess
             }
         }
 
+        public HashSet<Piece> capturedGamePieces(Color color)
+        {
+            HashSet<Piece> aux = new HashSet<Piece>();
+            foreach(Piece i in captured)
+            {
+                if (i.color == color)
+                {
+                    aux.Add(i);
+                }
+            }
+            return aux;
+        }
+
+        public HashSet<Piece> piecesInGame(Color color)
+        {
+            HashSet<Piece> aux = new HashSet<Piece>();
+            foreach (Piece i in captured)
+            {
+                if (i.color == color)
+                {
+                    aux.Add(i);
+                }
+            }
+            aux.ExceptWith(capturedGamePieces(color));
+            return aux;
+        }
+
+        public void placeNewPiece(char column, int line, Piece piece)
+        {
+            board.putPiece(piece, new PositionChess(column, line).toPosition());
+            pieces.Add(piece);
+        }
+
         private void placePieces()
         {
-            board.putPiece(new Tower(board, Color.Black), new PositionChess('c', 8).toPosition());
-            board.putPiece(new Tower(board, Color.Black), new PositionChess('c', 7).toPosition());
-            board.putPiece(new Tower(board, Color.Black), new PositionChess('d', 7).toPosition());
-            board.putPiece(new Tower(board, Color.Black), new PositionChess('e', 8).toPosition());
-            board.putPiece(new Tower(board, Color.Black), new PositionChess('e', 7).toPosition());
-            board.putPiece(new King(board, Color.Black), new PositionChess('d', 8).toPosition());
+            placeNewPiece('c', 1, new Tower(board, Color.White));
+            placeNewPiece('c', 2, new Tower(board, Color.White));
+            placeNewPiece('d', 2, new Tower(board, Color.White));
+            placeNewPiece('e', 1, new Tower(board, Color.White));
+            placeNewPiece('e', 2, new Tower(board, Color.White));
+            placeNewPiece('d', 1, new King(board, Color.White));
 
-            board.putPiece(new Tower(board, Color.White), new PositionChess('c', 1).toPosition());
-            board.putPiece(new Tower(board, Color.White), new PositionChess('c', 2).toPosition());
-            board.putPiece(new Tower(board, Color.White), new PositionChess('d', 2).toPosition());
-            board.putPiece(new Tower(board, Color.White), new PositionChess('e', 1).toPosition());
-            board.putPiece(new Tower(board, Color.White), new PositionChess('e', 2).toPosition());
-            board.putPiece(new King(board, Color.White), new PositionChess('d', 1).toPosition());
+            placeNewPiece('c', 8, new Tower(board, Color.Black));
+            placeNewPiece('c', 7, new Tower(board, Color.Black));
+            placeNewPiece('d', 7, new Tower(board, Color.Black));
+            placeNewPiece('e', 8, new Tower(board, Color.Black));
+            placeNewPiece('e', 7, new Tower(board, Color.Black));
+            placeNewPiece('d', 8, new King(board, Color.Black));            
+            
             /*
             board.putPiece(new Tower(board, Color.Black), new PositionChess('a', 8).toPosition());
             board.putPiece(new Horse(board, Color.Black), new PositionChess('b', 8).toPosition());
