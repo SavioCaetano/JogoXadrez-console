@@ -98,7 +98,7 @@ namespace chess
 
         public void validateTargetPosition(Position origin, Position destiny)
         {
-            if (!board.piece(origin).canMoveTo(destiny))
+            if (!board.piece(origin).possibleMove(destiny))
             {
                 throw new BoardException("Posição de destino inválida!");
             }
@@ -218,8 +218,6 @@ namespace chess
             return true;
 
         }
-
-
 
         public void placeNewPiece(char column, int line, Piece piece)
         {
