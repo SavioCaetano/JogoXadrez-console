@@ -33,7 +33,7 @@ namespace chess
                 {
                     break;
                 }
-                pos.line = pos.line - 1;
+                pos.setValues(pos.line - 1, pos.column);                
             }
 
             //abaixo
@@ -45,7 +45,7 @@ namespace chess
                 {
                     break;
                 }
-                pos.line = pos.line + 1;
+                pos.setValues(pos.line + 1, pos.column);                
             }
 
             //direita
@@ -57,7 +57,7 @@ namespace chess
                 {
                     break;
                 }
-                pos.column = pos.column + 1;
+                pos.setValues(pos.line, pos.column + 1);                
             }
 
             //esquerda
@@ -69,7 +69,7 @@ namespace chess
                 {
                     break;
                 }
-                pos.column = pos.column - 1;
+                pos.setValues(pos.line, pos.column - 1);
             }
 
             return mat;
