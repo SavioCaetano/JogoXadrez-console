@@ -13,11 +13,19 @@ namespace xadrez_console
             Console.WriteLine();
             printCapturedPieces(game);            
             Console.WriteLine("Turno: " + game.turn);
-            Console.WriteLine("Aguardando jogada: " + game.currentPlayer);
-            if (game.xeque)
+            if (!game.finished)
             {
-                Console.WriteLine("XEQUE!");
+                Console.WriteLine("Aguardando jogada: " + game.currentPlayer);
+                if (game.xeque)
+                {
+                    Console.WriteLine("XEQUE!");
+                }
             }
+            else
+            {
+                Console.WriteLine("XEQUE-MATE");
+                Console.WriteLine("Vencedor: " + game.currentPlayer);
+            }            
             Console.WriteLine();
         }
 

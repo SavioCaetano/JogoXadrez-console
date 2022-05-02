@@ -53,14 +53,14 @@ namespace chess
         public void makeMove(Position origin, Position destiny)
         {
             Piece capturedPiece = performMoviment(origin, destiny);
-            
-            if (isInXeque(currentPlayer))
+
+            if (isInCheck(currentPlayer))
             {
                 undoMoviment(origin, destiny, capturedPiece);
                 throw new BoardException("Você não pode se colocar em xeque!");
             }
 
-            if (isInXeque(opponent(currentPlayer)))
+            if (isInCheck(opponent(currentPlayer)))
             {
                 xeque = true;
             }
@@ -69,8 +69,15 @@ namespace chess
                 xeque = false;
             }
 
-            turn++;
-            changePlayer();
+            if (testCheckMate(opponent(currentPlayer)))
+            {
+                finished = true;
+            }
+            else
+            {
+                turn++;
+                changePlayer();
+            }
         }
 
         public void validateHomePosition(Position pos)
@@ -113,7 +120,7 @@ namespace chess
         public HashSet<Piece> capturedGamePieces(Color color)
         {
             HashSet<Piece> aux = new HashSet<Piece>();
-            foreach(Piece x in captured)
+            foreach (Piece x in captured)
             {
                 if (x.color == color)
                 {
@@ -151,7 +158,7 @@ namespace chess
 
         private Piece king(Color color)
         {
-            foreach(Piece x in piecesInGame(color))
+            foreach (Piece x in piecesInGame(color))
             {
                 if (x is King)
                 {
@@ -161,7 +168,7 @@ namespace chess
             return null;
         }
 
-        public bool isInXeque(Color color)
+        public bool isInCheck(Color color)
         {
             Piece K = king(color);
             if (K == null)
@@ -169,7 +176,7 @@ namespace chess
                 throw new BoardException("Não tem rei da cor " + color + " no tabuleiro!");
             }
 
-            foreach(Piece x in piecesInGame(opponent(color)))
+            foreach (Piece x in piecesInGame(opponent(color)))
             {
                 bool[,] mat = x.possibleMoves();
                 if (mat[K.position.line, K.position.column])
@@ -180,6 +187,40 @@ namespace chess
             return false;
         }
 
+        public bool testCheckMate(Color color)
+        {
+            if (!isInCheck(color))
+            {
+                return false;
+            }
+            foreach (Piece x in piecesInGame(color))
+            {
+                bool[,] mat = x.possibleMoves();
+                for (int i = 0; i < board.lines; i++)
+                {
+                    for (int j = 0; j < board.columns; j++)
+                    {
+                        if (mat[i, j])
+                        {
+                            Position origin = x.position;
+                            Position destiny = new Position(i, j);
+                            Piece capturedPiece = performMoviment(origin, destiny);
+                            bool testCheck = isInCheck(color);
+                            undoMoviment(origin, destiny, capturedPiece);
+                            if (!testCheck)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+
+        }
+
+
+
         public void placeNewPiece(char column, int line, Piece piece)
         {
             board.putPiece(piece, new PositionChess(column, line).toPosition());
@@ -188,6 +229,13 @@ namespace chess
 
         private void placePieces()
         {
+            placeNewPiece('a', 8, new King(board, Color.Black));
+            placeNewPiece('b', 8, new Tower(board, Color.Black));
+            placeNewPiece('h', 7, new Tower(board, Color.White));
+            placeNewPiece('c', 1, new Tower(board, Color.White));
+            placeNewPiece('d', 1, new King(board, Color.White));
+
+            /*
             placeNewPiece('c', 1, new Tower(board, Color.White));
             placeNewPiece('c', 2, new Tower(board, Color.White));
             placeNewPiece('d', 2, new Tower(board, Color.White));
@@ -200,8 +248,8 @@ namespace chess
             placeNewPiece('d', 7, new Tower(board, Color.Black));
             placeNewPiece('e', 8, new Tower(board, Color.Black));
             placeNewPiece('e', 7, new Tower(board, Color.Black));
-            placeNewPiece('d', 8, new King(board, Color.Black));            
-            
+            placeNewPiece('d', 8, new King(board, Color.Black));
+            */
             /*
             board.putPiece(new Tower(board, Color.Black), new PositionChess('a', 8).toPosition());
             board.putPiece(new Horse(board, Color.Black), new PositionChess('b', 8).toPosition());
