@@ -12,6 +12,7 @@ namespace chess
         private HashSet<Piece> pieces;
         private HashSet<Piece> captured;
         public bool check { get; private set; }
+        public Piece vulnerableEnPassant { get; private set; }
 
         public ChessGame()
         {
@@ -20,6 +21,7 @@ namespace chess
             currentPlayer = Color.White;
             finished = false;
             check = false;
+            vulnerableEnPassant = null;
             pieces = new HashSet<Piece>();
             captured = new HashSet<Piece>();
             placePieces();
@@ -56,6 +58,25 @@ namespace chess
                 board.putPiece(T, destinyT);
             }
 
+            // #jogadaespecial en passant
+            if (p is Peon)
+            {
+                if (origin.column != destiny.column && capturedPiece == null)
+                {
+                    Position posP;
+                    if (p.color == Color.White)
+                    {
+                        posP = new Position(destiny.line + 1, destiny.column);
+                    }
+                    else
+                    {
+                        posP = new Position(destiny.line - 1, destiny.column);
+                    }
+                    capturedPiece = board.removePiece(posP);
+                    captured.Add(capturedPiece);
+                }
+            }
+
             return capturedPiece;
         }
 
@@ -89,6 +110,25 @@ namespace chess
                 T.decrementNumberOfMoves();
                 board.putPiece(T, originT);
             }
+
+            // #jogadaespecial en passant
+            if (p is Peon)
+            {
+                if (origin.column != destiny.column && capturedPiece == vulnerableEnPassant)
+                {
+                    Piece peon = board.removePiece(destiny);
+                    Position posP;
+                    if (p.color == Color.White)
+                    {
+                        posP = new Position(3, destiny.column);
+                    }
+                    else
+                    {
+                        posP = new Position(4, destiny.column);
+                    }
+                    board.putPiece(peon, posP);
+                }
+            }
         }
 
         public void makeMove(Position origin, Position destiny)
@@ -118,6 +158,17 @@ namespace chess
             {
                 turn++;
                 changePlayer();
+            }
+
+            Piece p = board.piece(destiny);
+            // #jogadaespecial en passant
+            if (p is Peon && (destiny.line == origin.line - 2 || destiny.line == origin.line + 2))
+            {
+                vulnerableEnPassant = p;
+            }
+            else
+            {
+                vulnerableEnPassant = null;
             }
         }
 
@@ -267,7 +318,7 @@ namespace chess
         }
 
         private void placePieces()
-        {            
+        {
             placeNewPiece('a', 1, new Tower(board, Color.White));
             placeNewPiece('b', 1, new Horse(board, Color.White));
             placeNewPiece('c', 1, new Bishop(board, Color.White));
@@ -276,14 +327,14 @@ namespace chess
             placeNewPiece('f', 1, new Bishop(board, Color.White));
             placeNewPiece('g', 1, new Horse(board, Color.White));
             placeNewPiece('h', 1, new Tower(board, Color.White));
-            placeNewPiece('a', 2, new Peon(board, Color.White));
-            placeNewPiece('b', 2, new Peon(board, Color.White));
-            placeNewPiece('c', 2, new Peon(board, Color.White));
-            placeNewPiece('d', 2, new Peon(board, Color.White));
-            placeNewPiece('e', 2, new Peon(board, Color.White));
-            placeNewPiece('f', 2, new Peon(board, Color.White));
-            placeNewPiece('g', 2, new Peon(board, Color.White));
-            placeNewPiece('h', 2, new Peon(board, Color.White));
+            placeNewPiece('a', 2, new Peon(board, Color.White, this));
+            placeNewPiece('b', 2, new Peon(board, Color.White, this));
+            placeNewPiece('c', 2, new Peon(board, Color.White, this));
+            placeNewPiece('d', 2, new Peon(board, Color.White, this));
+            placeNewPiece('e', 2, new Peon(board, Color.White, this));
+            placeNewPiece('f', 2, new Peon(board, Color.White, this));
+            placeNewPiece('g', 2, new Peon(board, Color.White, this));
+            placeNewPiece('h', 2, new Peon(board, Color.White, this));
 
             placeNewPiece('a', 8, new Tower(board, Color.Black));
             placeNewPiece('b', 8, new Horse(board, Color.Black));
@@ -293,14 +344,14 @@ namespace chess
             placeNewPiece('f', 8, new Bishop(board, Color.Black));
             placeNewPiece('g', 8, new Horse(board, Color.Black));
             placeNewPiece('h', 8, new Tower(board, Color.Black));
-            placeNewPiece('a', 7, new Peon(board, Color.Black));
-            placeNewPiece('b', 7, new Peon(board, Color.Black));
-            placeNewPiece('c', 7, new Peon(board, Color.Black));
-            placeNewPiece('d', 7, new Peon(board, Color.Black));
-            placeNewPiece('e', 7, new Peon(board, Color.Black));
-            placeNewPiece('f', 7, new Peon(board, Color.Black));
-            placeNewPiece('g', 7, new Peon(board, Color.Black));
-            placeNewPiece('h', 7, new Peon(board, Color.Black));           
+            placeNewPiece('a', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('b', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('c', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('d', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('e', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('f', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('g', 7, new Peon(board, Color.Black, this));
+            placeNewPiece('h', 7, new Peon(board, Color.Black, this));
         }
     }
 }

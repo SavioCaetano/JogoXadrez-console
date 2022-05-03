@@ -4,8 +4,11 @@ namespace chess
 {
     class Peon : Piece
     {
-        public Peon(Board board, Color color) : base(board, color)
+        private ChessGame game;
+
+        public Peon(Board board, Color color, ChessGame game) : base(board, color)
         {
+            this.game = game;
         }
 
         public override string ToString()
@@ -54,6 +57,21 @@ namespace chess
                 {
                     mat[pos.line, pos.column] = true;
                 }
+
+                // #jogadaespecial en passant
+                if (position.line == 3)
+                {
+                    Position left = new Position(position.line, position.column - 1);
+                    if (board.validPosition(left) && existEnemy(left) && board.piece(left) == game.vulnerableEnPassant)
+                    {
+                        mat[left.line - 1, left.column] = true;
+                    }
+                    Position right = new Position(position.line, position.column + 1);
+                    if (board.validPosition(right) && existEnemy(right) && board.piece(right) == game.vulnerableEnPassant)
+                    {
+                        mat[right.line - 1, right.column] = true;
+                    }
+                }
             }
             else
             {
@@ -79,6 +97,21 @@ namespace chess
                 if (board.validPosition(pos) && existEnemy(pos))
                 {
                     mat[pos.line, pos.column] = true;
+                }
+
+                // #jogadaespecial en passant
+                if (position.line == 4)
+                {
+                    Position left = new Position(position.line, position.column - 1);
+                    if (board.validPosition(left) && existEnemy(left) && board.piece(left) == game.vulnerableEnPassant)
+                    {
+                        mat[left.line + 1, left.column] = true;
+                    }
+                    Position right = new Position(position.line, position.column + 1);
+                    if (board.validPosition(right) && existEnemy(right) && board.piece(right) == game.vulnerableEnPassant)
+                    {
+                        mat[right.line + 1, right.column] = true;
+                    }
                 }
             }
 
