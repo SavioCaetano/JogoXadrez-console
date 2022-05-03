@@ -11,7 +11,7 @@ namespace chess
         public bool finished { get; private set; }
         private HashSet<Piece> pieces;
         private HashSet<Piece> captured;
-        public bool xeque { get; private set; }
+        public bool check { get; private set; }
 
         public ChessGame()
         {
@@ -19,7 +19,7 @@ namespace chess
             turn = 1;
             currentPlayer = Color.White;
             finished = false;
-            xeque = false;
+            check = false;
             pieces = new HashSet<Piece>();
             captured = new HashSet<Piece>();
             placePieces();
@@ -35,6 +35,27 @@ namespace chess
             {
                 captured.Add(capturedPiece);
             }
+
+            // #jogadaespecial roque pequeno
+            if (p is King && destiny.column == origin.column + 2)
+            {
+                Position originT = new Position(origin.line, origin.column + 3);
+                Position destinyT = new Position(origin.line, origin.column + 1);
+                Piece T = board.removePiece(originT);
+                T.incrementNumberOfMoves();
+                board.putPiece(T, destinyT);
+            }
+
+            // #jogadaespecial roque grande
+            if (p is King && destiny.column == origin.column - 2)
+            {
+                Position originT = new Position(origin.line, origin.column - 4);
+                Position destinyT = new Position(origin.line, origin.column - 1);
+                Piece T = board.removePiece(originT);
+                T.incrementNumberOfMoves();
+                board.putPiece(T, destinyT);
+            }
+
             return capturedPiece;
         }
 
@@ -48,6 +69,26 @@ namespace chess
                 captured.Remove(capturedPiece);
             }
             board.putPiece(p, origin);
+
+            // #jogadaespecial roque pequeno
+            if (p is King && destiny.column == origin.column + 2)
+            {
+                Position originT = new Position(origin.line, origin.column + 3);
+                Position destinyT = new Position(origin.line, origin.column + 1);
+                Piece T = board.removePiece(destinyT);
+                T.decrementNumberOfMoves();
+                board.putPiece(T, originT);
+            }
+
+            // #jogadaespecial roque grande
+            if (p is King && destiny.column == origin.column - 2)
+            {
+                Position originT = new Position(origin.line, origin.column - 4);
+                Position destinyT = new Position(origin.line, origin.column - 1);
+                Piece T = board.removePiece(destinyT);
+                T.decrementNumberOfMoves();
+                board.putPiece(T, originT);
+            }
         }
 
         public void makeMove(Position origin, Position destiny)
@@ -62,11 +103,11 @@ namespace chess
 
             if (isInCheck(opponent(currentPlayer)))
             {
-                xeque = true;
+                check = true;
             }
             else
             {
-                xeque = false;
+                check = false;
             }
 
             if (testCheckMate(opponent(currentPlayer)))
@@ -231,7 +272,7 @@ namespace chess
             placeNewPiece('b', 1, new Horse(board, Color.White));
             placeNewPiece('c', 1, new Bishop(board, Color.White));
             placeNewPiece('d', 1, new Queen(board, Color.White));
-            placeNewPiece('e', 1, new King(board, Color.White));
+            placeNewPiece('e', 1, new King(board, Color.White, this));
             placeNewPiece('f', 1, new Bishop(board, Color.White));
             placeNewPiece('g', 1, new Horse(board, Color.White));
             placeNewPiece('h', 1, new Tower(board, Color.White));
@@ -248,7 +289,7 @@ namespace chess
             placeNewPiece('b', 8, new Horse(board, Color.Black));
             placeNewPiece('c', 8, new Bishop(board, Color.Black));
             placeNewPiece('d', 8, new Queen(board, Color.Black));
-            placeNewPiece('e', 8, new King(board, Color.Black));
+            placeNewPiece('e', 8, new King(board, Color.Black, this));
             placeNewPiece('f', 8, new Bishop(board, Color.Black));
             placeNewPiece('g', 8, new Horse(board, Color.Black));
             placeNewPiece('h', 8, new Tower(board, Color.Black));

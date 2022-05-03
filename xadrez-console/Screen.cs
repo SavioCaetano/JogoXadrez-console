@@ -16,7 +16,7 @@ namespace xadrez_console
             if (!game.finished)
             {
                 Console.WriteLine("Aguardando jogada: " + game.currentPlayer);
-                if (game.xeque)
+                if (game.check)
                 {
                     Console.WriteLine("XEQUE!");
                 }

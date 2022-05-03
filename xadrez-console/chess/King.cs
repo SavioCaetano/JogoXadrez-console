@@ -4,8 +4,12 @@ namespace chess
 {
     class King : Piece
     {
-        public King (Board board, Color color) : base(board, color)
+
+        private ChessGame game;
+
+        public King (Board board, Color color, ChessGame game) : base(board, color)
         {
+            this.game = game;
         }
 
         public override string ToString()
@@ -17,6 +21,12 @@ namespace chess
         {
             Piece p = board.piece(pos);
             return p == null || p.color != color;
+        }
+
+        private bool towerTestRoque (Position pos)
+        {
+            Piece p = board.piece(pos);
+            return p != null && p is Tower && p.color == color && p.numberOfMoves == 0;
         }
 
         public override bool[,] possibleMoves()
@@ -72,6 +82,36 @@ namespace chess
             {
                 mat[pos.line, pos.column] = true;
             }
+
+            // #jogadaespecial ROQUE
+            if (numberOfMoves == 0 && !game.check)
+            {
+                // #jogadaespecial Roque pequeno
+                Position posT1 = new Position(position.line, position.column + 3);
+                if (towerTestRoque(posT1))
+                {
+                    Position p1 = new Position(position.line, position.column + 1);
+                    Position p2 = new Position(position.line, position.column + 2);
+                    if (board.piece(p1) == null && board.piece(p2) == null)
+                    {
+                        mat[position.line, position.column + 2] = true;
+                    }
+                }
+
+                // #jogadaespecial Roque grande
+                Position posT2 = new Position(position.line, position.column - 4);
+                if (towerTestRoque(posT2))
+                {
+                    Position p1 = new Position(position.line, position.column - 1);
+                    Position p2 = new Position(position.line, position.column - 2);
+                    Position p3 = new Position(position.line, position.column - 3);
+                    if (board.piece(p1) == null && board.piece(p2) == null && board.piece(p3) == null)
+                    {
+                        mat[position.line, position.column - 2] = true;
+                    }
+                }
+            }
+
             return mat;
         }
     }

@@ -16,7 +16,7 @@ namespace chess
         private bool existEnemy(Position pos)
         {
             Piece p = board.piece(pos);
-            return p == null && p.color != color;
+            return p != null && p.color != color;
         }
 
         private bool freePosition(Position pos)
