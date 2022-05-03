@@ -141,6 +141,21 @@ namespace chess
                 throw new BoardException("Você não pode se colocar em xeque!");
             }
 
+            Piece p = board.piece(destiny);
+
+            // #jogadaespecial promocao
+            if (p is Peon)
+            {
+                if ((p.color == Color.White && destiny.line == 0) || p.color == Color.Black && destiny.line == 7)
+                {
+                    p = board.removePiece(destiny);
+                    pieces.Remove(p);
+                    Piece queen = new Queen(board, p.color);
+                    board.putPiece(queen, destiny);
+                    pieces.Add(queen);
+                }
+            }
+
             if (isInCheck(opponent(currentPlayer)))
             {
                 check = true;
@@ -159,8 +174,7 @@ namespace chess
                 turn++;
                 changePlayer();
             }
-
-            Piece p = board.piece(destiny);
+            
             // #jogadaespecial en passant
             if (p is Peon && (destiny.line == origin.line - 2 || destiny.line == origin.line + 2))
             {
